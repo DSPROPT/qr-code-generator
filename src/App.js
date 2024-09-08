@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { QRCodeSVG } from 'qrcode.react';
 import { BrowserRouter as Router, Route, Routes, Link } from 'react-router-dom';
 import './index.css'; // Ensure you are importing your CSS file here 
@@ -9,6 +9,7 @@ function QRCodeGenerator() {
   const [inputValue, setInputValue] = useState('');
   const [qrValue, setQRValue] = useState('');
   const [darkMode, setDarkMode] = useState(true);
+  const qrRef = useRef(null);
 
   const handleInputChange = (e) => {
     setInputValue(e.target.value);
@@ -53,6 +54,54 @@ function QRCodeGenerator() {
       document.documentElement.classList.remove('dark');
     }
   }, [darkMode]);
+
+  const downloadQRCode = () => {
+    const svg = qrRef.current.querySelector('svg');
+    const svgData = new XMLSerializer().serializeToString(svg);
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+
+    // Define the sizes
+    const qrSize = 180; // QR code size
+    const padding = 10; // Padding between QR code and signature
+    const signatureHeight = 30; // Space for signature text
+    const margin = 40; // Margin around the QR code
+    const totalSize = qrSize + padding + signatureHeight + margin * 2; // Total size including margin
+
+    // Set canvas size to include the margin
+    canvas.width = totalSize;
+    canvas.height = totalSize;
+
+    img.onload = function () {
+      // Draw background and margin
+      ctx.fillStyle = 'white'; // Set background to white
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      // Center the QR code on the canvas
+      const qrX = (canvas.width - qrSize) / 2; // X-coordinate to center the QR code
+      const qrY = (canvas.height - qrSize - padding - signatureHeight) / 2; // Y-coordinate to center the QR code and leave space for the signature
+
+      // Draw QR code in the center with margins
+      ctx.drawImage(img, qrX, qrY, qrSize, qrSize);
+
+      // Draw signature text below the QR code
+      ctx.font = '16px Arial';
+      ctx.fillStyle = 'black';
+      ctx.textAlign = 'center';
+      ctx.fillText('www.free-qr-code.pt', canvas.width / 2, qrY + qrSize + padding + signatureHeight / 2);
+
+      // Convert canvas to PNG and trigger download
+      const pngFile = canvas.toDataURL('image/png');
+      const downloadLink = document.createElement('a');
+      downloadLink.href = pngFile;
+      downloadLink.download = 'qr-code.png';
+      document.body.appendChild(downloadLink);
+      downloadLink.click();
+      document.body.removeChild(downloadLink);
+    };
+    img.src = `data:image/svg+xml;base64,${btoa(svgData)}`;
+  };
 
   return (
     <div className="min-h-screen flex flex-col justify-between bg-gray-50 dark:bg-gray-900 p-6 transition-colors">
@@ -110,9 +159,17 @@ function QRCodeGenerator() {
               Generate QR Code
             </button>
             {qrValue && (
-              <div className="mt-6 flex justify-center">
+              <div ref={qrRef} className="mt-6 flex justify-center">
                 <QRCodeSVG value={qrValue} size={180} className="border p-2 bg-gray-50 dark:bg-gray-700 rounded" />
               </div>
+            )}
+            {qrValue && (
+              <button
+                onClick={downloadQRCode}
+                className="w-full flex justify-center py-2 px-4 mt-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
+              >
+                Download QR Code
+              </button>
             )}
           </div>
           {/* Senseads Advertising Placeholder */}
