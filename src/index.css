@@ -16,3 +16,13 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+/* Light mode logo */
+.logo-light {
+  filter: invert(0%) brightness(0%) saturate(100%); /* Black logo */
+}
+
+/* Dark mode logo */
+.logo-dark {
+  filter: invert(100%) brightness(200%) saturate(100%); /* White logo */
+}
