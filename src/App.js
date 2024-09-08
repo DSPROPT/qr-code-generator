@@ -95,7 +95,7 @@ function QRCodeGenerator() {
       const pngFile = canvas.toDataURL('image/png');
       const downloadLink = document.createElement('a');
       downloadLink.href = pngFile;
-      downloadLink.download = 'qr-code.png';
+      downloadLink.download = 'qr-code-with-signature.png';
       document.body.appendChild(downloadLink);
       downloadLink.click();
       document.body.removeChild(downloadLink);
@@ -168,7 +168,7 @@ function QRCodeGenerator() {
                 onClick={downloadQRCode}
                 className="w-full flex justify-center py-2 px-4 mt-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-green-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-colors"
               >
-                Download QR Code
+                Download QR Code with Signature
               </button>
             )}
           </div>
@@ -179,10 +179,16 @@ function QRCodeGenerator() {
         </div>
       </div>
       {/* Footer with Privacy Policy Link */}
-      <footer className="text-center py-4">
-        <Link to="/privacy-policy" className="text-blue-500 hover:underline">
+      <footer className="text-center py-4 flex flex-col items-center">
+        <Link to="/privacy-policy" className="text-blue-500 hover:underline mb-2">
           Privacy Policy
         </Link>
+        <div className="flex items-center space-x-2">
+          <span className="text-white">Created by</span>
+          <a href="https://www.dss-pro.pt" className="flex items-center">
+            <img src="https://www.dss-pro.pt/assets/logo.cfd85e73.svg" alt="DSPRO Logo" className="h-6" />
+          </a>
+        </div>
       </footer>
     </div>
   );
